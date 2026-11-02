@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Voter Eligibility Verification{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold mb-1">
+            <i class="fa-solid fa-clipboard-check text-primary me-2"></i> Voter Eligibility Verification Engine
+        </h2>
+        <p class="text-muted small">Verify registration records, age eligibility criteria, and double-voting prevention status</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <!-- Search Form Card -->
+            <div class="content-box shadow-sm mb-4">
+                <form action="{{ url_for('check_eligibility') }}" method="POST">
+                    <label for="voter_id" class="form-label fw-semibold">Enter Voter ID to Inspect Status</label>
+                    <div class="input-group input-group-lg mb-3">
+                        <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" class="form-control" id="voter_id" name="voter_id" placeholder="e.g. VOTER-1001" value="{{ prefill_voter_id }}" required>
+                        <button class="btn btn-primary-custom px-4" type="submit">Verify Eligibility</button>
+                    </div>
+                </form>
+
+                <div class="d-flex gap-2 flex-wrap text-muted small">
+                    <span>Try sample voter IDs:</span>
+                    <a href="javascript:void(0);" onclick="document.getElementById('voter_id').value='VOTER-1001';"><code>VOTER-1001</code> (Eligible)</a> |
+                    <a href="javascript:void(0);" onclick="document.getElementById('voter_id').value='VOTER-1004';"><code>VOTER-1004</code> (Underage Ineligible)</a>
+                </div>
+            </div>
+
+            <!-- Verification Decision Report -->
+            {% if result %}
+                <div class="content-box shadow-sm border-2 {% if result.eligible %}border-success{% else %}border-danger{% endif %}">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon me-3 {% if result.eligible %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}" style="width: 54px; height: 54px; font-size: 1.6rem;">
+                            <i class="fa-solid {% if result.eligible %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0 {% if result.eligible %}text-success{% else %}text-danger{% endif %}">
+                                {% if result.eligible %}
+                                    Eligibility Confirmed - Authorized to Vote
+                                {% else %}
+                                    Ineligible - Voting Authorization Denied
+                                {% endif %}
+                            </h4>
+                            <p class="text-muted small mb-0">{{ result.message }}</p>
+                        </div>
+                    </div>
+
+                    {% if result.voter %}
+                        <div class="table-responsive mt-3">
+                            <table class="table-custom">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 35%;">Voter ID</th>
+                                        <td><code>{{ result.voter.voter_id }}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <td class="fw-bold">{{ result.voter.full_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Age</th>
+                                        <td>
+                                            {{ result.voter.age }} years
+                                            {% if result.voter.age >= 18 %}
+                                                <span class="badge bg-success ms-2">&ge; 18 Legal Voting Age</span>
+                                            {% else %}
+                                                <span class="badge bg-danger ms-2">Underage (&lt;18)</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Registered Email</th>
+                                        <td>{{ result.voter.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Biometric Enrollment</th>
+                                        <td>
+                                            {% if result.voter.fingerprint_enrolled and result.voter.face_enrolled %}
+                                                <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i> Both Biometrics Enrolled</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i> Incomplete Enrollment</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Voting History Status</th>
+                                        <td>
+                                            {% if result.voter.has_voted == 1 %}
+                                                <span class="badge bg-danger"><i class="fa-solid fa-ban me-1"></i> Already Voted (Duplicate Vote Blocked)</span>
+                                            {% else %}
+                                                <span class="badge bg-success"><i class="fa-solid fa-clock me-1"></i> Ballot Not Yet Cast</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            {% if result.eligible %}
+                                <a href="{{ url_for('authenticate_voter', voter_id=result.voter.voter_id) }}" class="btn btn-primary-custom">
+                                    <i class="fa-solid fa-fingerprint me-1"></i> Proceed to Biometric Authentication
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

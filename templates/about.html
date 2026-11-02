@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}About Project - Architecture & Cryptography{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero / Title -->
+    <div class="text-center mb-5">
+        <div class="badge bg-primary text-white px-3 py-1 mb-2">BTech Data Science Final-Year Capstone Project</div>
+        <h2 class="display-6 fw-bold mb-2">
+            Blockchain-Integrated Multimodal Biometric Electronic Voting System
+        </h2>
+        <p class="text-muted mx-auto" style="max-width: 800px;">
+            A tamper-evident, decentralized electronic voting architecture engineered with OpenCV computer vision,
+            multimodal biometric fusion, ECDSA digital signatures, and SHA-256 linked blockchain consensus.
+        </p>
+    </div>
+
+    <!-- Abstract & Objectives -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="content-box h-100">
+                <h4 class="fw-bold mb-3"><i class="fa-solid fa-bullseye text-primary me-2"></i> Project Objectives</h4>
+                <ul class="text-muted small lh-lg">
+                    <li><strong>Decentralized Tamper-Resistance:</strong> Store immutable vote transactions on a Proof-of-Work blockchain that makes vote manipulation mathematically detectable.</li>
+                    <li><strong>Multimodal Biometric Authentication:</strong> Eliminate voter impersonation by requiring simultaneous validation of fingerprint minutiae and facial geometry using OpenCV.</li>
+                    <li><strong>Ballot Secrecy & Privacy:</strong> Decouple voter identity from the ballot choice using anonymized voter authorization token hashes <code>H(voter_id + salt)</code>.</li>
+                    <li><strong>Cryptographic Non-Repudiation:</strong> Generate ECDSA SECP256K1 digital signatures for every cast ballot.</li>
+                    <li><strong>Prevention of Duplicate Voting:</strong> Enforce strict single-vote authorization checks at both application and consensus layers.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="content-box h-100">
+                <h4 class="fw-bold mb-3"><i class="fa-solid fa-microchip text-success me-2"></i> Technology Stack</h4>
+                <div class="table-responsive">
+                    <table class="table-custom small">
+                        <tbody>
+                            <tr>
+                                <th style="width: 30%;">Frontend</th>
+                                <td>HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3, Chart.js</td>
+                            </tr>
+                            <tr>
+                                <th>Backend</th>
+                                <td>Python 3.14, Flask, Werkzeug</td>
+                            </tr>
+                            <tr>
+                                <th>Database</th>
+                                <td>SQLite with automated schema migrations & transaction isolation</td>
+                            </tr>
+                            <tr>
+                                <th>Computer Vision</th>
+                                <td>OpenCV 4 (Haar Cascade detection, CLAHE, Bilateral filtering, ORB minutiae, Spatial LBP embeddings)</td>
+                            </tr>
+                            <tr>
+                                <th>Cryptography</th>
+                                <td>Python <code>hashlib</code> (SHA-256), Python <code>cryptography</code> (ECDSA SECP256K1)</td>
+                            </tr>
+                            <tr>
+                                <th>Blockchain</th>
+                                <td>Python custom linked-list blockchain with PoW, Merkle roots, and Ethereum EVM export interface</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mathematical Models & Security Framework -->
+    <div class="content-box mb-5">
+        <h4 class="fw-bold mb-3"><i class="fa-solid fa-square-root-variable text-info me-2"></i> Mathematical Models & Security Specifications</h4>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2">1. SHA-256 Avalanche Effect</h6>
+                    <p class="text-muted small">
+                        Every block header is cryptographically bound:
+                    </p>
+                    <code class="d-block p-2 bg-dark text-info rounded small mb-2">
+                        Hash = SHA256(Index + PrevHash + TxRoot + Nonce)
+                    </code>
+                    <p class="text-muted small mb-0">
+                        Changing a single bit in a recorded transaction produces an entirely uncorrelated 256-bit hash, breaking the entire downstream chain.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2">2. Cosine Similarity (Facial Scan)</h6>
+                    <p class="text-muted small">
+                        L2-normalized spatial Local Binary Pattern feature embeddings are compared via dot product:
+                    </p>
+                    <code class="d-block p-2 bg-dark text-info rounded small mb-2">
+                        Sim(A, B) = (A &bull; B) / (||A|| &bull; ||B||)
+                    </code>
+                    <p class="text-muted small mb-0">
+                        A score &ge; 0.65 confirms facial identity against enrolled templates with illumination invariance.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2">3. ECDSA Digital Signatures</h6>
+                    <p class="text-muted small">
+                        Elliptic Curve Digital Signature Algorithm over SECP256K1 curve:
+                    </p>
+                    <code class="d-block p-2 bg-dark text-info rounded small mb-2">
+                        Sig = ECDSA_Sign(PrivKey, SHA256(TxPayload))
+                    </code>
+                    <p class="text-muted small mb-0">
+                        Guarantees that only the voter's private key could have originated the ballot transaction, providing non-repudiation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Road Map -->
+    <div class="content-box mb-5">
+        <h4 class="fw-bold mb-3"><i class="fa-solid fa-arrows-split-up-and-left text-primary me-2"></i> 17-Step Systematic Project Workflow</h4>
+        <div class="table-responsive">
+            <table class="table-custom small">
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Workflow Stage</th>
+                        <th>Module</th>
+                        <th>Security Enforcement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>System Start</td><td>Infrastructure</td><td>SQLite DB and Blockchain Genesis block loaded</td></tr>
+                    <tr><td>2</td><td>Voter Registration</td><td>Module 2</td><td>Age &ge; 18 check; duplicate registration blocked</td></tr>
+                    <tr><td>3</td><td>Fingerprint Enrollment</td><td>Module 3</td><td>OpenCV CLAHE enhancement & ORB descriptor template extraction</td></tr>
+                    <tr><td>4</td><td>Face Enrollment</td><td>Module 4</td><td>Haar Cascade detection & spatial LBP embedding vector generation</td></tr>
+                    <tr><td>5</td><td>Multimodal Auth</td><td>Module 5</td><td>Both fingerprint and facial recognition evaluated simultaneously</td></tr>
+                    <tr><td>6</td><td>Auth Decision</td><td>Module 5</td><td>Strict AND-fusion: Reject if either biometric fails</td></tr>
+                    <tr><td>7</td><td>Eligibility Check</td><td>Module 6</td><td>Verify active registration and age eligibility flag</td></tr>
+                    <tr><td>8</td><td>Already Voted Check</td><td>Module 6</td><td>Reject duplicate voting attempt; allow exactly one vote</td></tr>
+                    <tr><td>9</td><td>Cast Vote</td><td>Module 7</td><td>Voter selects candidate on authenticated ballot screen</td></tr>
+                    <tr><td>10</td><td>Generate SHA-256 Hash</td><td>Module 8</td><td>Canonical transaction hash generated; voter identity decoupled</td></tr>
+                    <tr><td>11</td><td>Record on Blockchain</td><td>Module 9</td><td>Block sealed with Proof of Work and linked to previous hash</td></tr>
+                    <tr><td>12</td><td>Validate Vote</td><td>Module 9</td><td>Transaction root and cryptographic linkage confirmed</td></tr>
+                    <tr><td>13</td><td>Update Voting Status</td><td>Database</td><td>Atomically mark <code>has_voted = 1</code> in SQLite</td></tr>
+                    <tr><td>14</td><td>Election Closes</td><td>Module 1</td><td>Admin triggers official election closure</td></tr>
+                    <tr><td>15</td><td>Count Votes</td><td>Module 11</td><td>Independent on-chain block tally calculated and cross-verified</td></tr>
+                    <tr><td>16</td><td>Display Final Results</td><td>Module 11</td><td>Chart.js visualization and winner declared</td></tr>
+                    <tr><td>17</td><td>End</td><td>Security Audit</td><td>System audit trail recorded and blockchain verified</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ethereum & Web3 Extensibility -->
+    <div class="content-box">
+        <h4 class="fw-bold mb-3"><i class="fa-brands fa-ethereum text-primary me-2"></i> Future Ethereum & Smart Contract Extensibility</h4>
+        <p class="text-muted small">
+            The project architecture is deliberately decoupled into modular components. The simulated Python blockchain implements standard Ethereum JSON-RPC compatible payloads (<code>to_ethereum_payload()</code>), enabling seamless migration to Ethereum Mainnet, Polygon, or private Hyperledger Besu networks via Solidity smart contracts:
+        </p>
+        <pre class="bg-dark text-info p-3 rounded small mb-0"><code>// Future Solidity Smart Contract Interface
+interface IVotingBlockchain {
+    function castBallot(
+        bytes32 voterAuthHash,
+        string memory candidateId,
+        bytes memory ecdsaSignature
+    ) external returns (bytes32 txHash);
+
+    function getTally(string memory candidateId) external view returns (uint256);
+}</code></pre>
+    </div>
+</div>
+{% endblock %}

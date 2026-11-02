@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Official Election Results & Tally{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fa-solid fa-square-poll-vertical text-primary me-2"></i> Official Election Results & Certified Tally
+            </h2>
+            <p class="text-muted small mb-0">{{ results.election_title }} &bull; Independent On-Chain Blockchain Cross-Verification</p>
+        </div>
+
+        <div>
+            {% if results.is_closed %}
+                <span class="badge bg-danger fs-6 p-2">
+                    <i class="fa-solid fa-lock me-1"></i> Election Officially Concluded
+                </span>
+            {% else %}
+                <span class="badge bg-success fs-6 p-2">
+                    <i class="fa-solid fa-circle-dot fa-beat-fade me-1"></i> Live Active Election (Interim Tally)
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Winner Announcement Banner (If results available) -->
+    {% if results.winner and (results.is_closed or session.get('admin_logged_in')) %}
+        <div class="card border-0 shadow-lg text-white mb-4" style="background: linear-gradient(135deg, #1b263b 0%, #0d1b2a 100%); border-left: 6px solid #00b4d8 !important;">
+            <div class="card-body p-4 text-center">
+                <div class="fs-1 text-warning mb-2"><i class="fa-solid fa-trophy fa-bounce"></i></div>
+                <div class="badge bg-warning text-dark fw-bold px-3 py-1 mb-2">PROJECTED WINNING CANDIDATE</div>
+                <h1 class="display-6 fw-bold mb-1 text-white">{{ results.winner.name }}</h1>
+                <h5 class="text-info fw-semibold mb-2">{{ results.winner.party }} ({{ results.winner.symbol }})</h5>
+                <p class="text-light opacity-75 mx-auto mb-3" style="max-width: 600px;">{{ results.winner.manifesto }}</p>
+
+                <div class="d-inline-flex gap-4 p-3 rounded-pill bg-dark bg-opacity-50 px-4">
+                    <div><strong>{{ results.winner.db_votes }}</strong> <span class="text-muted small">Total Votes</span></div>
+                    <div class="border-start border-secondary"></div>
+                    <div><strong>{{ results.winner.percentage }}%</strong> <span class="text-muted small">Vote Share</span></div>
+                    <div class="border-start border-secondary"></div>
+                    <div><span class="text-success"><i class="fa-solid fa-check-circle"></i> On-Chain Verified</span></div>
+                </div>
+            </div>
+        </div>
+    {% elif results.is_tie %}
+        <div class="alert alert-warning text-center p-4 mb-4">
+            <h4><i class="fa-solid fa-scale-balanced me-2"></i> Dead Heat / Tie Detected</h4>
+            <p class="mb-0">Top candidates have received an identical number of votes.</p>
+        </div>
+    {% endif %}
+
+    <!-- Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Total Ballots Cast</span>
+                    <div class="stat-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+                </div>
+                <div class="stat-val text-primary">{{ results.total_votes }}</div>
+                <small class="text-muted">Recorded & Mined</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Voter Turnout</span>
+                    <div class="stat-icon"><i class="fa-solid fa-percent"></i></div>
+                </div>
+                <div class="stat-val text-success">{{ results.turnout_percentage }}%</div>
+                <small class="text-muted">{{ results.total_voted }} of {{ results.total_eligible }} eligible</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Blockchain Blocks</span>
+                    <div class="stat-icon"><i class="fa-solid fa-cube"></i></div>
+                </div>
+                <div class="stat-val">{{ results.blockchain_status.total_blocks }}</div>
+                <small class="text-muted">PoW Sealed</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Ledger Audit</span>
+                    <div class="stat-icon"><i class="fa-solid fa-shield-check"></i></div>
+                </div>
+                <div class="stat-val">
+                    {% if results.blockchain_status.is_valid %}
+                        <span class="text-success fs-3">VALID</span>
+                    {% else %}
+                        <span class="text-danger fs-3">FAILED</span>
+                    {% endif %}
+                </div>
+                <small class="text-muted">SHA-256 Linkage</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section (Pie & Bar Chart) -->
+    <div class="row g-4 mb-4">
+        <!-- Bar Chart -->
+        <div class="col-lg-7">
+            <div class="content-box h-100">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-column text-primary me-2"></i> Candidate Vote Distribution</h5>
+                <div style="position: relative; height: 320px;">
+                    <canvas id="voteBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-lg-5">
+            <div class="content-box h-100">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-pie text-primary me-2"></i> Percentage Share</h5>
+                <div style="position: relative; height: 320px;">
+                    <canvas id="votePieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidate Detailed Tally & Blockchain Audit Cross-Check Table -->
+    <div class="content-box mb-4">
+        <div class="content-box-header">
+            <div>
+                <h4 class="fw-bold mb-1">Dual-Layer Verification Audit Table</h4>
+                <p class="text-muted small mb-0">Cross-checks SQLite application counts against raw cryptographic on-chain blockchain blocks</p>
+            </div>
+            <a href="{{ url_for('blockchain_explorer') }}" class="btn btn-sm btn-outline-custom">
+                <i class="fa-solid fa-link me-1"></i> Inspect Raw Blocks
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Party</th>
+                        <th>Symbol</th>
+                        <th>DB Count</th>
+                        <th>On-Chain Blockchain Count</th>
+                        <th>Share (%)</th>
+                        <th>Audit Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cand in results.candidates %}
+                        <tr>
+                            <td class="fw-bold text-dark">{{ cand.name }}</td>
+                            <td><span class="badge bg-light text-primary border">{{ cand.party }}</span></td>
+                            <td class="fs-5">{{ cand.symbol }}</td>
+                            <td class="fw-bold text-primary">{{ cand.db_votes }}</td>
+                            <td class="fw-bold text-info">{{ cand.chain_votes }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                        <div class="progress-bar" style="width: {{ cand.percentage }}%; background-color: {{ cand.color.border }};"></div>
+                                    </div>
+                                    <span class="small fw-semibold">{{ cand.percentage }}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if cand.is_synchronized %}
+                                    <span class="badge bg-success-subtle text-success border border-success">
+                                        <i class="fa-solid fa-check-double me-1"></i> 100% Match
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger">
+                                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Discrepancy Detected
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const labels = {{ results.chart.labels | tojson }};
+        const data = {{ results.chart.data | tojson }};
+        const backgrounds = {{ results.chart.backgrounds | tojson }};
+        const borders = {{ results.chart.borders | tojson }};
+
+        // 1. Render Bar Chart
+        const ctxBar = document.getElementById('voteBarChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Verified Votes',
+                    data: data,
+                    backgroundColor: backgrounds,
+                    borderColor: borders,
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // 2. Render Pie Chart
+        const ctxPie = document.getElementById('votePieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgrounds,
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, padding: 12 }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

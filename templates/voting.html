@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Official Voting Ballot{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Authenticated Voter Banner -->
+    <div class="alert alert-success d-flex justify-content-between align-items-center mb-4 shadow-sm">
+        <div class="d-flex align-items-center">
+            <div class="stat-icon bg-success text-white me-3" style="width: 48px; height: 48px;">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0 text-success">Authenticated Voter Session</h5>
+                <span class="small text-muted">
+                    Voter: <strong>{{ voter.full_name }}</strong> (<code>{{ voter.voter_id }}</code>) &bull; Multimodal Biometric Verification Confirmed
+                </span>
+            </div>
+        </div>
+        <div class="badge bg-light text-success border border-success p-2">
+            <i class="fa-solid fa-shield-halved me-1"></i> Authorized Ballot Session
+        </div>
+    </div>
+
+    <!-- Ballot Header -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold mb-1">
+            <i class="fa-solid fa-check-to-slot text-primary me-2"></i> Official Electronic Ballot
+        </h2>
+        <p class="text-muted small">Select your preferred candidate. You will review a confirmation screen before the ballot is digitally signed and sealed onto the blockchain.</p>
+    </div>
+
+    <!-- Candidate Selection Form -->
+    <form action="{{ url_for('confirm_vote_route') }}" method="POST" id="votingForm">
+        <div class="row g-4 mb-4">
+            {% for candidate in candidates %}
+                <div class="col-md-6 col-lg-3">
+                    <label class="candidate-card candidate-select-card w-100" for="cand_{{ candidate.candidate_id }}">
+                        <div class="text-center">
+                            <div class="candidate-symbol">{{ candidate.symbol.split(' ')[0] }}</div>
+                            <span class="badge bg-light text-primary border mb-2">{{ candidate.symbol }}</span>
+                            <div class="candidate-party">{{ candidate.party }}</div>
+                            <h4 class="candidate-name">{{ candidate.name }}</h4>
+                            <div class="badge bg-secondary-subtle text-dark border mb-3">ID: {{ candidate.candidate_id }}</div>
+                            <p class="text-muted small mb-3">{{ candidate.manifesto }}</p>
+                        </div>
+
+                        <div class="form-check d-flex justify-content-center align-items-center border-top pt-3">
+                            <input class="form-check-input fs-5 me-2" type="radio" name="candidate_id" id="cand_{{ candidate.candidate_id }}" value="{{ candidate.candidate_id }}" required>
+                            <span class="fw-semibold text-dark">Select Candidate</span>
+                        </div>
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Privacy & Cryptographic Guarantee Notice -->
+        <div class="content-box bg-light border p-3 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h6 class="fw-bold mb-1"><i class="fa-solid fa-lock text-info me-1"></i> Anonymized Ballot Privacy Guarantee</h6>
+                    <p class="text-muted small mb-0">
+                        Your vote is decoupled from your personal identity. The blockchain records an anonymized authorization token <code>H(voter_id + salt)</code> and your ECDSA SECP256K1 digital signature. No one, including election officials, can reverse-link your ballot choice to your name.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button type="submit" class="btn btn-primary-custom btn-lg px-4" id="proceedToConfirmBtn" disabled>
+                        Review & Confirm Vote <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

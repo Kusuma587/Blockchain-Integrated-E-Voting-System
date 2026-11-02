@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Fingerprint Biometric Enrollment{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold mb-1">
+            <i class="fa-solid fa-fingerprint text-primary me-2"></i> Fingerprint Biometric Enrollment
+        </h2>
+        <p class="text-muted small">Step 2: Capture ridge minutiae using OpenCV enhancement and extract ORB feature descriptors</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="content-box shadow-sm">
+                <!-- Wizard Navigation -->
+                <div class="d-flex justify-content-between mb-4 border-bottom pb-3 text-center">
+                    <div class="text-success fw-semibold">
+                        <i class="fa-solid fa-check-circle me-1"></i> 1. Demographics
+                    </div>
+                    <div class="text-primary fw-bold">
+                        <span class="badge bg-primary rounded-circle px-2 py-1 me-1">2</span> Fingerprint
+                    </div>
+                    <div class="text-muted">
+                        <span class="badge bg-light text-muted border rounded-circle px-2 py-1 me-1">3</span> Face Scan
+                    </div>
+                    <div class="text-muted">
+                        <span class="badge bg-light text-muted border rounded-circle px-2 py-1 me-1">4</span> Ballot Access
+                    </div>
+                </div>
+
+                <!-- Mode Indicator Banner -->
+                <div class="alert {% if demo_mode %}alert-warning{% else %}alert-info{% endif %} d-flex align-items-center mb-4">
+                    <i class="fa-solid {% if demo_mode %}fa-flask{% else %}fa-microchip{% endif %} fs-4 me-3"></i>
+                    <div>
+                        <strong>Active Operating Mode:</strong>
+                        {% if demo_mode %}
+                            <span class="badge bg-warning text-dark ms-1">DEMO BIOMETRIC SIMULATION</span>
+                            <div class="small mt-1">Synthetic high-contrast fingerprint ridge pattern generators are active. You can enroll with one click or upload custom print images.</div>
+                        {% else %}
+                            <span class="badge bg-info text-dark ms-1">LIVE OPTICAL / HARDWARE MODE</span>
+                            <div class="small mt-1">Live camera / optical scanner input enabled. Upload fingerprint scans or use camera frame capture.</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form action="{{ url_for('enroll_fingerprint_route') }}" method="POST" enctype="multipart/form-data" id="fpEnrollForm">
+                    <!-- Voter ID Input -->
+                    <div class="mb-4">
+                        <label for="voter_id" class="form-label fw-semibold">Voter ID to Enroll <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-id-badge"></i></span>
+                            <input type="text" class="form-control" id="voter_id" name="voter_id" placeholder="e.g. VOTER-1001" value="{{ prefill_voter_id }}" required>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="mode" value="{% if demo_mode %}demo{% else %}live{% endif %}">
+                    <input type="hidden" name="webcam_image" id="fp_webcam_data">
+
+                    <!-- Biometric Acquisition Options -->
+                    <div class="row g-4 mb-4">
+                        <!-- Option A: Scanner / Webcam -->
+                        <div class="col-md-6">
+                            <div class="biometric-card h-100 active">
+                                <h6 class="fw-bold mb-2"><i class="fa-solid fa-camera text-primary me-1"></i> Live Optical / Camera Capture</h6>
+                                
+                                <div class="scanner-box mb-2">
+                                    <video id="fpVideo" autoplay playsinline></video>
+                                    <div class="scanner-overlay"></div>
+                                    <div class="scanner-laser"></div>
+                                </div>
+                                <canvas id="fpCanvas" style="display: none;"></canvas>
+
+                                <div id="fpCamStatus" class="mb-2"></div>
+
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnStartFpCam">
+                                        <i class="fa-solid fa-video me-1"></i> Start Camera
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-primary-custom" id="btnCaptureFpCam">
+                                        <i class="fa-solid fa-camera me-1"></i> Capture Frame
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Option B: Image File Upload & Demo -->
+                        <div class="col-md-6">
+                            <div class="biometric-card h-100">
+                                <h6 class="fw-bold mb-2"><i class="fa-solid fa-upload text-success me-1"></i> Upload Print Image / Demo</h6>
+                                
+                                <div class="py-3 text-center">
+                                    <i class="fa-solid fa-fingerprint fingerprint-icon-pulse mb-2"></i>
+                                    <div class="text-muted small mb-3">Accepts PNG, JPG, BMP, TIFF formats</div>
+                                    
+                                    <input type="file" class="form-control form-control-sm mb-3" name="fingerprint_file" id="fingerprint_file" accept="image/*">
+                                </div>
+
+                                {% if demo_mode %}
+                                    <div class="p-2 bg-light rounded border text-start small">
+                                        <div class="fw-semibold text-warning"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Demo Quick Enrollment</div>
+                                        Clicking Enroll without uploading a file will automatically synthesize and extract a protected mathematical ridge pattern for this voter.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Explanation -->
+                    <div class="p-3 bg-light rounded border mb-4 small text-muted">
+                        <strong>OpenCV Processing Pipeline:</strong>
+                        Raw Image &rarr; CLAHE Equalization &rarr; Bilateral Filter &rarr; Otsu Ridge Binarization &rarr; ORB Minutiae Extraction &rarr; SHA-256 Protected Template.
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                            Enroll Fingerprint & Next <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let fpCam = null;
+    document.getElementById('btnStartFpCam').addEventListener('click', function() {
+        fpCam = new BiometricCamera('fpVideo', 'fpCanvas', 'fp_webcam_data', 'fpCamStatus');
+        fpCam.startCamera();
+    });
+
+    document.getElementById('btnCaptureFpCam').addEventListener('click', function() {
+        if (fpCam) {
+            fpCam.captureSnapshot();
+        } else {
+            alert('Please start camera first.');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+
+venv/
+__pycache__/
+*.pyc
+.env
+*.log
+
+database/*.db
+uploads/fingerprints/*
+uploads/faces/*
+
+*.pem
+*.key
+private_key*

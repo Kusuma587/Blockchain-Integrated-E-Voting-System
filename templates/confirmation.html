@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Vote Confirmation & Receipt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if vote_success and receipt %}
+                <!-- SUCCESS RECEIPT VIEW -->
+                <div class="content-box shadow-lg text-center border-top border-5 border-success">
+                    <div class="stat-icon mx-auto mb-3 bg-success-subtle text-success" style="width: 70px; height: 70px; font-size: 2.5rem;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <h2 class="fw-bold text-success mb-2">Vote Cast & Recorded Successfully!</h2>
+                    <p class="text-muted mb-4">
+                        Your ballot has been digitally signed using your ECDSA SECP256K1 private key and permanently sealed into the decentralized blockchain ledger.
+                    </p>
+
+                    <!-- Cryptographic Receipt Box -->
+                    <div class="card bg-light border text-start p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="fa-solid fa-receipt text-primary me-2"></i> Immutable Blockchain Receipt
+                            </h5>
+                            <span class="badge bg-success">SEALED ON CHAIN</span>
+                        </div>
+
+                        <div class="row g-2 small">
+                            <div class="col-sm-4 text-muted fw-semibold">Block Index:</div>
+                            <div class="col-sm-8 fw-bold text-dark">#{{ receipt.block_index }}</div>
+
+                            <div class="col-sm-4 text-muted fw-semibold">Transaction Hash (SHA-256):</div>
+                            <div class="col-sm-8">
+                                <div class="hash-box d-flex justify-content-between align-items-center">
+                                    <span>{{ receipt.transaction_hash }}</span>
+                                    <button type="button" class="btn btn-sm btn-link text-info p-0 btn-copy-hash" data-hash="{{ receipt.transaction_hash }}">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 text-muted fw-semibold">Current Block Hash:</div>
+                            <div class="col-sm-8">
+                                <div class="hash-box">{{ receipt.block_hash }}</div>
+                            </div>
+
+                            <div class="col-sm-4 text-muted fw-semibold">Previous Block Hash:</div>
+                            <div class="col-sm-8">
+                                <div class="hash-box">{{ receipt.previous_hash }}</div>
+                            </div>
+
+                            <div class="col-sm-4 text-muted fw-semibold">Anonymized Voter Token:</div>
+                            <div class="col-sm-8">
+                                <div class="hash-box text-muted">{{ receipt.voter_auth_hash }}</div>
+                            </div>
+
+                            <div class="col-sm-4 text-muted fw-semibold">Proof of Work (Nonce):</div>
+                            <div class="col-sm-8 text-dark fw-bold">{{ receipt.nonce }} iterations</div>
+
+                            <div class="col-sm-4 text-muted fw-semibold">Timestamp:</div>
+                            <div class="col-sm-8 text-dark">{{ receipt.timestamp }}</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{{ url_for('blockchain_explorer') }}" class="btn btn-primary-custom">
+                            <i class="fa-solid fa-cube me-1"></i> View in Blockchain Explorer
+                        </a>
+                        <a href="{{ url_for('election_results') }}" class="btn btn-outline-custom">
+                            <i class="fa-solid fa-chart-column me-1"></i> Live Election Standings
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.print();">
+                            <i class="fa-solid fa-print me-1"></i> Print Receipt
+                        </button>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- PRE-SUBMISSION CONFIRMATION VIEW -->
+                <div class="content-box shadow-lg">
+                    <div class="text-center mb-4">
+                        <div class="stat-icon mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                            <i class="fa-solid fa-shield-halved text-warning"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">Confirm Your Ballot Choice</h3>
+                        <p class="text-muted small">Please verify your selected candidate before final cryptographic signing</p>
+                    </div>
+
+                    <!-- Selected Candidate Summary Card -->
+                    <div class="p-4 rounded-3 border-2 border-primary border bg-light mb-4 text-center">
+                        <div class="fs-1 mb-2">{{ candidate.symbol.split(' ')[0] }}</div>
+                        <div class="badge bg-primary px-3 py-1 mb-2">{{ candidate.symbol }}</div>
+                        <h3 class="fw-bold text-dark mb-1">{{ candidate.name }}</h3>
+                        <h5 class="text-primary fw-semibold mb-2">{{ candidate.party }}</h5>
+                        <p class="text-muted small mb-0">{{ candidate.manifesto }}</p>
+                    </div>
+
+                    <!-- Warning Alert -->
+                    <div class="alert alert-warning d-flex align-items-center mb-4">
+                        <i class="fa-solid fa-triangle-exclamation fs-4 me-3 text-warning"></i>
+                        <div class="small">
+                            <strong>Irreversible Action Warning:</strong> Once submitted, your vote is hashed, signed with your ECDSA private key, and permanently added to the blockchain. You cannot change your vote or vote again.
+                        </div>
+                    </div>
+
+                    <!-- Submission Form -->
+                    <form action="{{ url_for('submit_vote_route') }}" method="POST">
+                        <input type="hidden" name="candidate_id" value="{{ candidate.candidate_id }}">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('voting_panel') }}" class="btn btn-outline-secondary">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Change Selection
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4 py-2">
+                                <i class="fa-solid fa-lock me-2"></i> Digitally Sign & Seal Vote
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

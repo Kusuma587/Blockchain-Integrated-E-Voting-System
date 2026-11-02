@@ -1,0 +1,498 @@
+/* ============================================================
+   Blockchain-Integrated Multimodal Biometric Electronic Voting System
+   Theme: Professional Dark Blue & White with Cyan / Emerald Accents
+   ============================================================ */
+
+:root {
+    --primary-navy: #0d1b2a;
+    --navy-card: #1b263b;
+    --navy-light: #415a77;
+    --accent-cyan: #00b4d8;
+    --accent-blue: #0077b6;
+    --accent-cyan-light: #90e0ef;
+    --bg-light: #f8fafc;
+    --card-light: #ffffff;
+    --border-light: #e2e8f0;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #0284c7;
+    --shadow-sm: 0 2px 4px rgba(13, 27, 42, 0.06);
+    --shadow-md: 0 4px 12px rgba(13, 27, 42, 0.1);
+    --shadow-lg: 0 10px 25px rgba(13, 27, 42, 0.15);
+    --transition: all 0.25s ease-in-out;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* -------------------------------------------------------------
+   Navigation Bar
+   ------------------------------------------------------------- */
+.navbar-custom {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, #112233 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    padding: 0.8rem 1.5rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.navbar-brand span {
+    color: var(--accent-cyan);
+}
+
+.nav-link {
+    color: #cbd5e1 !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(0, 180, 216, 0.15);
+}
+
+/* -------------------------------------------------------------
+   Page Header & Banners
+   ------------------------------------------------------------- */
+.page-hero {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--navy-card) 100%);
+    color: #ffffff;
+    padding: 3rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 0 0 16px 16px;
+    box-shadow: var(--shadow-md);
+}
+
+.page-hero h1 {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.hero-subtitle {
+    color: var(--accent-cyan-light);
+    font-size: 1.1rem;
+    max-width: 800px;
+}
+
+/* -------------------------------------------------------------
+   Cards & Layout Components
+   ------------------------------------------------------------- */
+.stat-card {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent-cyan);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    background: rgba(0, 180, 216, 0.1);
+    color: var(--accent-blue);
+}
+
+.stat-val {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+/* Modern Content Box */
+.content-box {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.content-box-header {
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* -------------------------------------------------------------
+   Buttons & Pills
+   ------------------------------------------------------------- */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-cyan) 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.65rem 1.4rem;
+    border-radius: 8px;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 119, 182, 0.25);
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #005f94 0%, #0096b7 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 119, 182, 0.35);
+}
+
+.btn-outline-custom {
+    border: 2px solid var(--navy-light);
+    color: var(--navy-card);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.6rem 1.3rem;
+    transition: var(--transition);
+}
+
+.btn-outline-custom:hover {
+    background: var(--navy-card);
+    color: #ffffff;
+    border-color: var(--navy-card);
+}
+
+.btn-danger-custom {
+    background: var(--danger);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    transition: var(--transition);
+}
+
+.btn-danger-custom:hover {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+/* Status Badges */
+.badge-status {
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.badge-open {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.badge-closed {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.badge-valid {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.badge-corrupt {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.badge-demo {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+/* -------------------------------------------------------------
+   Biometrics Cards & Live Scanner
+   ------------------------------------------------------------- */
+.biometric-card {
+    background: #ffffff;
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    transition: var(--transition);
+}
+
+.biometric-card.active {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
+}
+
+.scanner-box {
+    width: 100%;
+    max-width: 320px;
+    height: 240px;
+    background: #0d1b2a;
+    border-radius: 10px;
+    margin: 0 auto 1.2rem auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid var(--navy-light);
+}
+
+.scanner-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scanner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border: 2px dashed rgba(0, 180, 216, 0.6);
+    box-sizing: border-box;
+}
+
+.scanner-laser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #00ffcc;
+    box-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+    animation: scanAnim 2.2s infinite ease-in-out;
+}
+
+@keyframes scanAnim {
+    0% { top: 0%; opacity: 0.8; }
+    50% { top: 96%; opacity: 1; }
+    100% { top: 0%; opacity: 0.8; }
+}
+
+.fingerprint-icon-pulse {
+    font-size: 4rem;
+    color: var(--accent-cyan);
+    animation: fpPulse 2s infinite ease-in-out;
+}
+
+@keyframes fpPulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 15px rgba(0, 180, 216, 0.6); }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+/* -------------------------------------------------------------
+   Candidate Cards for Voting Panel
+   ------------------------------------------------------------- */
+.candidate-card {
+    background: #ffffff;
+    border: 2px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: var(--transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.candidate-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.candidate-card.selected {
+    border-color: var(--accent-cyan);
+    background-color: #f0fdfa;
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+}
+
+.candidate-symbol {
+    font-size: 2.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.candidate-party {
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.candidate-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+    margin: 0.4rem 0;
+}
+
+/* -------------------------------------------------------------
+   Blockchain Explorer Visualizer
+   ------------------------------------------------------------- */
+.block-card {
+    background: #ffffff;
+    border: 2px solid var(--navy-light);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    transition: var(--transition);
+}
+
+.block-card.genesis {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.block-card.tampered {
+    border-color: var(--danger);
+    background: #fef2f2;
+    animation: tamperPulse 1.5s infinite;
+}
+
+@keyframes tamperPulse {
+    0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 18px rgba(239, 68, 68, 0.8); }
+    100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0.4); }
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.block-index {
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--primary-navy);
+}
+
+.hash-box {
+    background: #0f172a;
+    color: #38bdf8;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    word-break: break-all;
+    margin-bottom: 0.5rem;
+}
+
+.chain-connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.8rem 0;
+    color: var(--accent-blue);
+    font-size: 1.5rem;
+}
+
+/* -------------------------------------------------------------
+   Tables & Audit Logs
+   ------------------------------------------------------------- */
+.table-custom {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-custom th {
+    background-color: #f1f5f9;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 2px solid var(--border-light);
+}
+
+.table-custom td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.9rem;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* -------------------------------------------------------------
+   Footer
+   ------------------------------------------------------------- */
+.footer-custom {
+    margin-top: auto;
+    background: var(--primary-navy);
+    color: #94a3b8;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+    font-size: 0.88rem;
+    border-top: 1px solid var(--navy-card);
+}
+
+.footer-custom a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+}
+
+.footer-custom a:hover {
+    text-decoration: underline;
+}

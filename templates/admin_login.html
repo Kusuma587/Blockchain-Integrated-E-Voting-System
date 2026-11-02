@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Login{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="content-box shadow-lg">
+                <div class="text-center mb-4">
+                    <div class="stat-icon mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                        <i class="fa-solid fa-user-shield text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Election Authority Login</h3>
+                    <p class="text-muted small">Access administrative controls, election state, and blockchain logs</p>
+                </div>
+
+                <form action="{{ url_for('admin_login') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold">Admin Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="e.g. admin" required value="admin">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Admin Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter secure password" required value="Admin@2026!">
+                        </div>
+                        <div class="form-text small text-muted">
+                            <i class="fa-solid fa-circle-info me-1"></i> Demo credentials pre-filled: <code>admin</code> / <code>Admin@2026!</code>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary-custom py-2">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Admin Console
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3 pt-3 border-top">
+                    <a href="{{ url_for('index') }}" class="text-decoration-none text-muted small">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Return to Public Home Page
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

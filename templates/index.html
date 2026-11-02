@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Home - E-Voting System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero">
+    <div class="container text-center py-4">
+        <div class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mb-3">
+            <i class="fa-solid fa-graduation-cap me-1"></i> BTech Data Science Capstone Project
+        </div>
+        <h1 class="display-5 fw-bold mb-3">
+            Blockchain-Integrated Multimodal Biometric Electronic Voting System
+        </h1>
+        <p class="hero-subtitle mx-auto mb-4">
+            A next-generation electronic voting architecture combining OpenCV facial recognition,
+            fingerprint minutiae extraction, ECDSA digital signatures, and decentralized SHA-256 blockchain verification.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if election_state and election_state.is_open == 1 and election_state.is_closed == 0 %}
+                <a href="{{ url_for('authenticate_voter') }}" class="btn btn-lg btn-primary-custom">
+                    <i class="fa-solid fa-fingerprint me-2"></i> Authenticate & Cast Vote
+                </a>
+            {% else %}
+                <a href="{{ url_for('election_results') }}" class="btn btn-lg btn-primary-custom">
+                    <i class="fa-solid fa-chart-column me-2"></i> View Election Outcome
+                </a>
+            {% endif %}
+            <a href="{{ url_for('register') }}" class="btn btn-lg btn-outline-light">
+                <i class="fa-solid fa-user-plus me-2"></i> Voter Registration
+            </a>
+            <a href="{{ url_for('blockchain_explorer') }}" class="btn btn-lg btn-outline-info">
+                <i class="fa-solid fa-cube me-2"></i> Explore Blockchain
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <!-- Live Status Overview Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="stat-label">Election Status</div>
+                    <div class="stat-icon"><i class="fa-solid fa-landmark"></i></div>
+                </div>
+                <div class="stat-val">
+                    {% if election_state and election_state.is_open == 1 and election_state.is_closed == 0 %}
+                        <span class="text-success fs-3">ACTIVE</span>
+                    {% else %}
+                        <span class="text-danger fs-3">CLOSED</span>
+                    {% endif %}
+                </div>
+                <small class="text-muted">General Election 2026</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="stat-label">Blockchain Blocks</div>
+                    <div class="stat-icon"><i class="fa-solid fa-link"></i></div>
+                </div>
+                <div class="stat-val">{{ total_blocks }}</div>
+                <small class="text-muted">SHA-256 Verified</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="stat-label">Chain Integrity</div>
+                    <div class="stat-icon"><i class="fa-solid fa-shield-check"></i></div>
+                </div>
+                <div class="stat-val">
+                    {% if chain_valid %}
+                        <span class="text-success fs-3">100% VALID</span>
+                    {% else %}
+                        <span class="text-danger fs-3">TAMPERED</span>
+                    {% endif %}
+                </div>
+                <small class="text-muted">PoW Proof Verified</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="stat-label">Biometric Mode</div>
+                    <div class="stat-icon"><i class="fa-solid fa-microchip"></i></div>
+                </div>
+                <div class="stat-val">
+                    {% if demo_mode %}
+                        <span class="text-warning fs-4">DEMO</span>
+                    {% else %}
+                        <span class="text-info fs-4">HARDWARE</span>
+                    {% endif %}
+                </div>
+                <small class="text-muted">OpenCV AI Engine</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Architecture Pillars -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="content-box h-100">
+                <div class="text-primary fs-1 mb-3"><i class="fa-solid fa-fingerprint"></i></div>
+                <h4 class="fw-bold mb-2">Multimodal Biometrics</h4>
+                <p class="text-muted">
+                    Combines OpenCV minutiae extraction using ORB feature detection with spatial Local Binary Pattern (LBP) facial embeddings.
+                    Both checks must pass simultaneously for access.
+                </p>
+                <ul class="list-unstyled text-muted small">
+                    <li><i class="fa-solid fa-check text-info me-2"></i>Adaptive CLAHE & Gabor Filtering</li>
+                    <li><i class="fa-solid fa-check text-info me-2"></i>Protected Biometric Hashes</li>
+                    <li><i class="fa-solid fa-check text-info me-2"></i>Zero Raw Biometrics Stored on Chain</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="content-box h-100">
+                <div class="text-success fs-1 mb-3"><i class="fa-solid fa-key"></i></div>
+                <h4 class="fw-bold mb-2">ECDSA Digital Signatures</h4>
+                <p class="text-muted">
+                    Voters sign vote transactions using SECP256K1 elliptic curve private keys.
+                    Non-repudiation is guaranteed while preserving ballot privacy via pseudonymous voter token hashes.
+                </p>
+                <ul class="list-unstyled text-muted small">
+                    <li><i class="fa-solid fa-check text-success me-2"></i>SECP256K1 Curve (Ethereum-grade)</li>
+                    <li><i class="fa-solid fa-check text-success me-2"></i>Decoupled Ballot Identity</li>
+                    <li><i class="fa-solid fa-check text-success me-2"></i>Strict Single-Vote Guarantee</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="content-box h-100">
+                <div class="text-info fs-1 mb-3"><i class="fa-solid fa-cubes"></i></div>
+                <h4 class="fw-bold mb-2">Tamper-Evident Ledger</h4>
+                <p class="text-muted">
+                    Every cast vote forms a cryptographic block linked via previous SHA-256 hashes and Proof-of-Work mining.
+                    Any retroactive block modification breaks chain integrity immediately.
+                </p>
+                <ul class="list-unstyled text-muted small">
+                    <li><i class="fa-solid fa-check text-info me-2"></i>Deterministic Canonical Hashes</li>
+                    <li><i class="fa-solid fa-check text-info me-2"></i>Real-Time Tamper Detection UI</li>
+                    <li><i class="fa-solid fa-check text-info me-2"></i>Extensible for Web3 & Ethereum</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official Candidates Showcase -->
+    <div class="content-box">
+        <div class="content-box-header">
+            <div>
+                <h3 class="fw-bold mb-1">Official Election Candidates</h3>
+                <p class="text-muted mb-0 small">Registered candidates running in General Election 2026</p>
+            </div>
+            <a href="{{ url_for('election_results') }}" class="btn btn-sm btn-outline-custom">
+                <i class="fa-solid fa-square-poll-vertical me-1"></i> Standings
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for candidate in candidates %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="candidate-card">
+                        <div>
+                            <div class="candidate-symbol">{{ candidate.symbol.split(' ')[0] }}</div>
+                            <div class="candidate-party">{{ candidate.party }}</div>
+                            <h5 class="candidate-name">{{ candidate.name }}</h5>
+                            <div class="badge bg-light text-dark border mb-3">ID: {{ candidate.candidate_id }}</div>
+                            <p class="text-muted small">{{ candidate.manifesto }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- System Workflow Diagram (1 to 17 steps) -->
+    <div class="content-box mt-5">
+        <h4 class="fw-bold mb-3"><i class="fa-solid fa-diagram-project text-primary me-2"></i> Complete System Workflow Architecture</h4>
+        <p class="text-muted small mb-4">The secure step-by-step pipeline executed from voter enrollment to immutable blockchain recording:</p>
+        
+        <div class="row g-3 small">
+            <div class="col-md-4 col-6">
+                <div class="p-3 bg-light rounded border">
+                    <span class="badge bg-primary me-1">1-4</span> <strong>Registration & Enrollment</strong><br>
+                    Voter enters credentials. OpenCV captures & stores protected fingerprint minutiae and face embeddings.
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="p-3 bg-light rounded border">
+                    <span class="badge bg-primary me-1">5-6</span> <strong>Multimodal Verification</strong><br>
+                    Dual biometric check. Both fingerprint and face must match enrolled templates. Rejects if either fails.
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="p-3 bg-light rounded border">
+                    <span class="badge bg-primary me-1">7-8</span> <strong>Eligibility & Anti-Duplicate</strong><br>
+                    Verifies age &ge; 18 and checks <code>has_voted</code> flag. Rejects duplicate voting attempts strictly.
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="p-3 bg-light rounded border">
+                    <span class="badge bg-primary me-1">9-10</span> <strong>Ballot Cast & SHA-256</strong><br>
+                    Voter selects candidate. Payload is hashed using SHA-256 and signed with voter's ECDSA private key.
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="p-3 bg-light rounded border">
+                    <span class="badge bg-primary me-1">11-13</span> <strong>Blockchain Sealing</strong><br>
+                    Mines new block linked to previous hash. Verifies PoW. Sets <code>has_voted = 1</code> in SQLite.
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="p-3 bg-light rounded border">
+                    <span class="badge bg-primary me-1">14-17</span> <strong>Closure & Official Tally</strong><br>
+                    Admin closes election. On-chain votes are tallied independently and cross-audited against database.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

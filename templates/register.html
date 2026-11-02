@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Voter Registration{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Registration Header -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold mb-1">
+            <i class="fa-solid fa-id-card text-primary me-2"></i> Voter Registration Portal
+        </h2>
+        <p class="text-muted small">Register eligible citizens for biometric enrollment and decentralized electronic voting</p>
+    </div>
+
+    <!-- Registration Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="content-box shadow-sm">
+                <!-- Registration Flow Wizard Pills -->
+                <div class="d-flex justify-content-between mb-4 border-bottom pb-3 text-center">
+                    <div class="text-primary fw-bold">
+                        <span class="badge bg-primary rounded-circle px-2 py-1 me-1">1</span> Demographics
+                    </div>
+                    <div class="text-muted">
+                        <span class="badge bg-light text-muted border rounded-circle px-2 py-1 me-1">2</span> Fingerprint
+                    </div>
+                    <div class="text-muted">
+                        <span class="badge bg-light text-muted border rounded-circle px-2 py-1 me-1">3</span> Face Scan
+                    </div>
+                    <div class="text-muted">
+                        <span class="badge bg-light text-muted border rounded-circle px-2 py-1 me-1">4</span> Cryptographic Keys
+                    </div>
+                </div>
+
+                <form action="{{ url_for('register') }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="voter_id" class="form-label fw-semibold">National / Voter ID <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-hashtag"></i></span>
+                                <input type="text" class="form-control" id="voter_id" name="voter_id" placeholder="e.g. VOTER-2026-005" required>
+                            </div>
+                            <div class="form-text small">Must be unique across the voting system.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label fw-semibold">Full Legal Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" class="form-control" id="full_name" name="full_name" placeholder="First and Last Name" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="age" class="form-label fw-semibold">Age (Years) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-cake-candles"></i></span>
+                                <input type="number" class="form-control" id="age" name="age" min="1" max="120" placeholder="e.g. 21" required>
+                            </div>
+                            <div class="form-text small text-muted">&ge; 18 years required for eligibility.</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="voter@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="mobile" class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-phone"></i></span>
+                                <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="10-digit number" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Notice Box -->
+                    <div class="p-3 bg-light rounded border my-4">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-shield-halved text-primary fs-5 mt-1"></i>
+                            <div class="small text-muted">
+                                <strong>Cryptographic Protection Notice:</strong>
+                                Upon submitting registration, an <code>ECDSA SECP256K1</code> key pair will be automatically generated.
+                                Your private key is stored securely to sign your future ballot transaction, and your biometric templates
+                                will be one-way hashed with SHA-256. Raw biometric imagery is never published onto the public ledger.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                            Register & Proceed to Biometrics <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

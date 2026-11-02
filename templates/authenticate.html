@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Multimodal Biometric Authentication{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold mb-1">
+            <i class="fa-solid fa-user-check text-primary me-2"></i> Multimodal Biometric Voter Authentication
+        </h2>
+        <p class="text-muted small">Dual-biometric verification: Both Fingerprint and Face must validate to unlock ballot</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="content-box shadow-sm">
+                <!-- Mode Indicator Banner -->
+                <div class="alert {% if demo_mode %}alert-warning{% else %}alert-info{% endif %} d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid {% if demo_mode %}fa-flask{% else %}fa-camera{% endif %} fs-4 me-3"></i>
+                        <div>
+                            <strong>Biometric Verification Mode:</strong>
+                            {% if demo_mode %}
+                                <span class="badge bg-warning text-dark ms-1">DEMO SIMULATION ACTIVE</span>
+                                <div class="small mt-1">Test with sample voters (<code>VOTER-1001</code>, <code>VOTER-1002</code>, <code>VOTER-1003</code>) without hardware.</div>
+                            {% else %}
+                                <span class="badge bg-info text-dark ms-1">LIVE OPTICAL / CAMERA ACTIVE</span>
+                                <div class="small mt-1">Live camera frame matching against enrolled templates.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <form action="{{ url_for('toggle_demo_mode') }}" method="POST" class="m-0">
+                        <button type="submit" class="btn btn-sm btn-outline-dark">Toggle Mode</button>
+                    </form>
+                </div>
+
+                <!-- Multimodal Authentication Form -->
+                <form action="{{ url_for('authenticate_voter') }}" method="POST" enctype="multipart/form-data" id="authForm">
+                    <input type="hidden" name="mode" value="{% if demo_mode %}demo{% else %}live{% endif %}">
+                    <input type="hidden" name="fingerprint_webcam" id="auth_fp_webcam">
+                    <input type="hidden" name="face_webcam" id="auth_face_webcam">
+
+                    <!-- Voter ID Selection -->
+                    <div class="mb-4">
+                        <label for="voter_id" class="form-label fw-semibold">Enter Enrolled Voter ID <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-id-card"></i></span>
+                            <input type="text" class="form-control form-control-lg" id="voter_id" name="voter_id" placeholder="e.g. VOTER-1001" value="{{ prefill_voter_id }}" required>
+                        </div>
+                        <div class="form-text small text-muted">
+                            <i class="fa-solid fa-circle-info me-1"></i> Pre-enrolled test voters:
+                            <code>VOTER-1001</code> (Aarav), <code>VOTER-1002</code> (Diya), <code>VOTER-1003</code> (Rohan), <code>VOTER-1004</code> (Underage Ineligible Test)
+                        </div>
+                    </div>
+
+                    <!-- Dual Biometric Panels -->
+                    <div class="row g-4 mb-4">
+                        <!-- Biometric 1: Fingerprint Panel -->
+                        <div class="col-md-6">
+                            <div class="biometric-card h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                                    <h6 class="fw-bold mb-0 text-primary">
+                                        <i class="fa-solid fa-fingerprint me-1"></i> Biometric 1: Fingerprint
+                                    </h6>
+                                    <span class="badge bg-primary">Required</span>
+                                </div>
+
+                                <div class="scanner-box mb-3">
+                                    <video id="authFpVideo" autoplay playsinline></video>
+                                    <div class="scanner-overlay"></div>
+                                    <div class="scanner-laser"></div>
+                                </div>
+                                <canvas id="authFpCanvas" style="display: none;"></canvas>
+                                <div id="authFpStatus" class="mb-2"></div>
+
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnAuthStartFp">
+                                        <i class="fa-solid fa-video me-1"></i> Cam
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-primary-custom" id="btnAuthCaptureFp">
+                                        <i class="fa-solid fa-camera me-1"></i> Snap
+                                    </button>
+                                </div>
+
+                                <div class="border-top pt-2">
+                                    <label class="form-label small text-muted mb-1">Or Upload Print Image:</label>
+                                    <input type="file" class="form-control form-control-sm" name="fingerprint_file" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Biometric 2: Facial Recognition Panel -->
+                        <div class="col-md-6">
+                            <div class="biometric-card h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                                    <h6 class="fw-bold mb-0 text-primary">
+                                        <i class="fa-solid fa-face-smile me-1"></i> Biometric 2: Facial Scan
+                                    </h6>
+                                    <span class="badge bg-primary">Required</span>
+                                </div>
+
+                                <div class="scanner-box mb-3">
+                                    <video id="authFaceVideo" autoplay playsinline></video>
+                                    <div class="scanner-overlay" style="border-radius: 50%; width: 170px; height: 210px; margin: auto; border: 2px dashed #00b4d8;"></div>
+                                    <div class="scanner-laser"></div>
+                                </div>
+                                <canvas id="authFaceCanvas" style="display: none;"></canvas>
+                                <div id="authFaceStatus" class="mb-2"></div>
+
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnAuthStartFace">
+                                        <i class="fa-solid fa-video me-1"></i> Cam
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-primary-custom" id="btnAuthCaptureFace">
+                                        <i class="fa-solid fa-camera me-1"></i> Snap
+                                    </button>
+                                </div>
+
+                                <div class="border-top pt-2">
+                                    <label class="form-label small text-muted mb-1">Or Upload Headshot Photo:</label>
+                                    <input type="file" class="form-control form-control-sm" name="face_file" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rule Callout -->
+                    <div class="p-3 bg-light rounded border mb-4 text-center">
+                        <div class="fw-semibold text-dark mb-1">
+                            <i class="fa-solid fa-lock text-primary me-1"></i> Strict Multimodal Fusion Security Rule:
+                        </div>
+                        <div class="text-muted small">
+                            Both Fingerprint ORB Minutiae Match &ge; {{ config.FINGERPRINT_MATCH_THRESHOLD }} AND Facial Cosine Similarity &ge; {{ (config.FACE_SIMILARITY_THRESHOLD * 100)|round }}% are strictly enforced.
+                            If either biometric fails, access is rejected.
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary-custom btn-lg py-3">
+                            <i class="fa-solid fa-fingerprint me-2"></i> Verify Biometrics & Unlock Ballot
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Diagnostics Breakdown (if available) -->
+                {% if diagnostics and diagnostics.fingerprint and diagnostics.face %}
+                    <div class="mt-4 pt-4 border-top">
+                        <h5 class="fw-bold mb-3">Authentication Diagnostics Report</h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 rounded border {% if diagnostics.fingerprint.passed %}bg-success-subtle border-success{% else %}bg-danger-subtle border-danger{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong>Fingerprint Status:</strong>
+                                        {% if diagnostics.fingerprint.passed %}
+                                            <span class="badge bg-success">PASSED</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">FAILED</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small">Minutiae Matches: <strong>{{ diagnostics.fingerprint.minutiae_matches }}</strong> (Req: &ge; {{ config.FINGERPRINT_MATCH_THRESHOLD }})</div>
+                                    <div class="small">Match Score: <strong>{{ diagnostics.fingerprint.score }}</strong></div>
+                                    <div class="small text-muted mt-1">{{ diagnostics.fingerprint.message }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 rounded border {% if diagnostics.face.passed %}bg-success-subtle border-success{% else %}bg-danger-subtle border-danger{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong>Face Status:</strong>
+                                        {% if diagnostics.face.passed %}
+                                            <span class="badge bg-success">PASSED</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">FAILED</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small">Confidence Score: <strong>{{ (diagnostics.face.confidence * 100)|round(1) }}%</strong> (Req: &ge; {{ (config.FACE_SIMILARITY_THRESHOLD * 100)|round }}%)</div>
+                                    <div class="small text-muted mt-1">{{ diagnostics.face.message }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% elif diagnostics and diagnostics.get('reason') %}
+                    <div class="mt-4 pt-4 border-top">
+                        <div class="alert alert-danger mb-0">
+                            <strong><i class="fa-solid fa-triangle-exclamation me-1"></i> Pre-Authentication Check Rejected:</strong>
+                            {{ diagnostics.reason }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let authFpCam = null;
+    let authFaceCam = null;
+
+    document.getElementById('btnAuthStartFp').addEventListener('click', function() {
+        authFpCam = new BiometricCamera('authFpVideo', 'authFpCanvas', 'auth_fp_webcam', 'authFpStatus');
+        authFpCam.startCamera();
+    });
+
+    document.getElementById('btnAuthCaptureFp').addEventListener('click', function() {
+        if (authFpCam) {
+            authFpCam.captureSnapshot();
+        } else {
+            alert('Please start fingerprint camera first.');
+        }
+    });
+
+    document.getElementById('btnAuthStartFace').addEventListener('click', function() {
+        authFaceCam = new BiometricCamera('authFaceVideo', 'authFaceCanvas', 'auth_face_webcam', 'authFaceStatus');
+        authFaceCam.startCamera();
+    });
+
+    document.getElementById('btnAuthCaptureFace').addEventListener('click', function() {
+        if (authFaceCam) {
+            authFaceCam.captureSnapshot();
+        } else {
+            alert('Please start face camera first.');
+        }
+    });
+</script>
+{% endblock %}
