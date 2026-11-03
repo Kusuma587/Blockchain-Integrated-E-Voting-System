@@ -585,6 +585,7 @@ def election_results():
 # General Pages: Home, About, API
 # -------------------------------------------------------------
 @app.route('/')
+@app.route('/api/index')
 def index():
     """Home landing page."""
     candidates = get_all_candidates()
