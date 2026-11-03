@@ -284,4 +284,45 @@ Open your browser and navigate to: **`http://127.0.0.1:5000`**
 * [x] **Tamper Detection**: Real-time detection and visual notification of corrupted blocks.
 * [x] **Double-Vote Prevention**: Rejection of duplicate voting attempts across both database and consensus layers.
 * [x] **Visual Analytics**: Interactive Chart.js bar and donut charts for election outcome.
-* [x] **Unit & Integration Tests**: 21 passing automated tests covering all modules.
+* [x] **Unit & Integration Tests**: 24 passing automated tests covering all modules and Vercel serverless entrypoint.
+
+---
+
+## ☁️ Vercel Cloud Deployment Guide
+
+This project is configured for deployment to **Vercel** serverless cloud infrastructure.
+
+### Files Configured for Vercel
+1. **`vercel.json`**: Configures Vercel Python runtime (`@vercel/python`) and routes static assets directly to CDN.
+2. **`api/index.py`**: The serverless WSGI entry point exposing the Flask `app` object.
+3. **`requirements.txt`**: Specifies `opencv-python-headless>=4.8.0` so Vercel's Amazon Linux containers install without requiring X11/OpenGL desktop GUI libraries (`libGL.so.1`).
+4. **`config.py`**: Automatically detects serverless runtime (`VERCEL=1`) and routes SQLite writes and uploads safely to `/tmp`.
+5. **`.gitignore`**: Excludes local `venv/`, compiled bytecode, and `.env` from Git commits.
+
+### Step-by-Step Vercel Deployment Instructions
+1. **Push to GitHub**:
+   Initialize git and push the repository to your GitHub account:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit for Vercel deployment"
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   git push -u origin main
+   ```
+2. **Import into Vercel**:
+   * Go to [vercel.com](https://vercel.com) and log in.
+   * Click **"Add New..."** $\rightarrow$ **"Project"**.
+   * Select your GitHub repository.
+3. **Configure Environment Variables in Vercel Dashboard**:
+   Under **Project Settings** $\rightarrow$ **Environment Variables**, optionally set:
+   * `SECRET_KEY`: A strong random string.
+   * `DEMO_MODE`: `True` *(essential for cloud evaluation without physical USB hardware)*.
+   * `DEFAULT_ADMIN_USER`: `admin`
+   * `DEFAULT_ADMIN_PASS`: `Admin@2026!`
+4. **Deploy**:
+   * Click **"Deploy"**. Vercel will build the serverless functions and serve your application live!
+
+### ⚠️ Cloud vs. Local Academic Prototype Constraints
+* **Physical USB Fingerprint Scanners**: Cannot communicate across cloud boundaries to serverless containers without special local client software. The application's **Demo Biometric Mode** and **Webcam / File Upload Mode** provide the working academic evaluation solution.
+* **Persistent Storage**: Vercel serverless lambda filesystem is read-only except `/tmp`. Data written to SQLite in `/tmp` is ephemeral and resets during cold starts. For persistent enterprise production, the architecture seamlessly supports external cloud databases (e.g., Neon Postgres, Supabase) and public Ethereum/Polygon smart contracts.

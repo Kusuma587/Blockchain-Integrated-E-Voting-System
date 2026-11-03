@@ -71,6 +71,12 @@
 
                 <!-- Status Badges & Admin Controls -->
                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                    {% if is_serverless %}
+                        <span class="badge bg-secondary-subtle text-light border border-secondary" title="Running on Serverless Cloud (/tmp ephemeral storage)">
+                            <i class="fa-solid fa-cloud text-info me-1"></i> Cloud Runtime
+                        </span>
+                    {% endif %}
+
                     <!-- Election State Pill -->
                     {% if election_state and election_state.is_open == 1 and election_state.is_closed == 0 %}
                         <span class="badge badge-status badge-open" title="Election is active">

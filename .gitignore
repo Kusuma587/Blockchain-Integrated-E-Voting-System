@@ -1,13 +1,18 @@
-
 venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .env
+.env.*
+!.env.example
 *.log
 
-database/*.db
-uploads/fingerprints/*
-uploads/faces/*
+database/
+uploads/
+
+*.db
+*.sqlite
+*.sqlite3
 
 *.pem
 *.key

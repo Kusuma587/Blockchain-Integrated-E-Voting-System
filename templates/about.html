@@ -155,6 +155,29 @@
         </div>
     </div>
 
+    <!-- Cloud Deployment & Academic Architecture Scope -->
+    <div class="content-box mb-5">
+        <h4 class="fw-bold mb-3"><i class="fa-solid fa-cloud text-primary me-2"></i> Cloud Deployment & Academic Architecture Considerations</h4>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-fingerprint text-info me-1"></i> Hardware Biometrics vs. Cloud Boundaries</h6>
+                    <p class="text-muted small mb-0">
+                        Physical USB optical scanners (e.g., DigitalPersona, SecuGen) require local device drivers and cannot be addressed directly across remote serverless cloud environments due to browser hardware isolation boundaries. For this reason, the application features an integrated <strong>Biometric Demo Mode</strong> that mathematically synthesizes high-contrast sinusoidal fingerprint ridge patterns and normalized face embeddings, as well as browser-level webcam and image upload support.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-database text-warning me-1"></i> Serverless Ephemeral Storage</h6>
+                    <p class="text-muted small mb-0">
+                        Serverless platforms like Vercel execute inside ephemeral, read-only containers with a temporary <code>/tmp</code> scratchpad. In cloud deployments, the SQLite database resides in <code>/tmp/voting.db</code> and is auto-seeded on cold starts. For persistent enterprise production, the architecture seamlessly supports external cloud databases (e.g., Neon Postgres, Supabase) and public Ethereum/Polygon smart contracts.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Ethereum & Web3 Extensibility -->
     <div class="content-box">
         <h4 class="fw-bold mb-3"><i class="fa-brands fa-ethereum text-primary me-2"></i> Future Ethereum & Smart Contract Extensibility</h4>

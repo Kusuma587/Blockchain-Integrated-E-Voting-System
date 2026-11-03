@@ -7,6 +7,7 @@ candidate management, election state, and persistent blockchain storage.
 import sqlite3
 import os
 import json
+import shutil
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
@@ -14,9 +15,27 @@ from signatures import generate_ecdsa_keypair
 from hashing import generate_sha256
 
 
+def ensure_db_ready():
+    """Ensure database file directory exists and seed template is copied if on serverless runtime."""
+    try:
+        os.makedirs(os.path.dirname(Config.DATABASE_PATH), exist_ok=True)
+    except (OSError, PermissionError):
+        pass
+
+    # If running in serverless mode (e.g. Vercel) and /tmp database does not exist,
+    # copy the pre-seeded SQLite database from the deployment package if available.
+    if Config.IS_SERVERLESS and not os.path.exists(Config.DATABASE_PATH):
+        bundled_db = os.path.join(Config.BASE_DIR, 'database', 'voting.db')
+        if os.path.exists(bundled_db):
+            try:
+                shutil.copy2(bundled_db, Config.DATABASE_PATH)
+            except Exception as e:
+                print(f"Serverless DB copy notice: {e}")
+
+
 def get_db_connection():
     """Create and return a database connection with row factory enabled."""
-    os.makedirs(os.path.dirname(Config.DATABASE_PATH), exist_ok=True)
+    ensure_db_ready()
     conn = sqlite3.connect(Config.DATABASE_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -111,14 +130,33 @@ def init_db():
         )
     ''')
 
-    # 1. Seed Default Admin if not exists
-    cursor.execute('SELECT * FROM admin WHERE username = ?', (Config.DEFAULT_ADMIN_USER,))
-    if not cursor.fetchone():
-        hashed_pw = generate_password_hash(Config.DEFAULT_ADMIN_PASS)
+    # # 1. Seed Default Admin if not exists
+    # cursor.execute('SELECT * FROM admin WHERE username = ?', (Config.DEFAULT_ADMIN_USER,))
+    # if not cursor.fetchone():
+    #     hashed_pw = generate_password_hash(Config.DEFAULT_ADMIN_PASS)
+    #     cursor.execute(
+    #         'INSERT INTO admin (username, password_hash) VALUES (?, ?)',
+    #         (Config.DEFAULT_ADMIN_USER, hashed_pw)
+    #     )
+    # 1. Seed Default Admin if credentials are configured
+    admin_username = Config.DEFAULT_ADMIN_USER
+    admin_password = Config.DEFAULT_ADMIN_PASS
+    if admin_username and admin_password:
         cursor.execute(
-            'INSERT INTO admin (username, password_hash) VALUES (?, ?)',
-            (Config.DEFAULT_ADMIN_USER, hashed_pw)
+            'SELECT * FROM admin WHERE username = ?',
+            (admin_username,)
         )
+
+        if not cursor.fetchone():
+            hashed_pw = generate_password_hash(admin_password)
+
+            cursor.execute(
+                'INSERT INTO admin (username, password_hash) VALUES (?, ?)',
+                (admin_username, hashed_pw)
+            )
+    elif Config.IS_PRODUCTION:
+        print("Admin account creation skipped: credentials are not configured.")
+
 
     # 2. Seed Default Election State if not exists
     cursor.execute('SELECT * FROM election_state WHERE id = 1')

@@ -31,13 +31,22 @@ from voting import cast_vote
 from results import calculate_election_results
 from blockchain import blockchain_instance
 
-app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_folder=os.path.join(BASE_DIR, 'static')
+)
 app.config.from_object(Config)
 
-# Ensure upload directories exist
-os.makedirs(Config.FINGERPRINT_FOLDER, exist_ok=True)
-os.makedirs(Config.FACE_FOLDER, exist_ok=True)
-os.makedirs(os.path.dirname(Config.DATABASE_PATH), exist_ok=True)
+# Ensure upload directories exist safely without crashing on read-only serverless filesystems
+try:
+    os.makedirs(Config.FINGERPRINT_FOLDER, exist_ok=True)
+    os.makedirs(Config.FACE_FOLDER, exist_ok=True)
+    os.makedirs(os.path.dirname(Config.DATABASE_PATH), exist_ok=True)
+except (OSError, PermissionError):
+    pass
 
 # Initialize database tables and sample seeds
 with app.app_context():
@@ -73,11 +82,12 @@ def voter_auth_required(f):
 
 @app.context_processor
 def inject_global_state():
-    """Inject election state and demo mode status into all templates."""
+    """Inject election state, demo mode status, and runtime environment into all templates."""
     election = get_election_state()
     return {
         'election_state': election,
         'demo_mode': Config.DEMO_MODE,
+        'is_serverless': Config.IS_SERVERLESS,
         'app_title': 'Blockchain-Integrated Multimodal Biometric E-Voting'
     }
 
@@ -628,6 +638,6 @@ if __name__ == '__main__':
     print(" Blockchain-Integrated Multimodal Biometric Electronic Voting System ")
     print(" Final-Year BTech Data Science Capstone Project ")
     print(" Server launching on http://127.0.0.1:5000 ")
-    print(f" Default Admin: {Config.DEFAULT_ADMIN_USER} | Password: {Config.DEFAULT_ADMIN_PASS}")
+    # print(f" Default Admin: {Config.DEFAULT_ADMIN_USER} | Password: {Config.DEFAULT_ADMIN_PASS}")
     print("=" * 70)
     app.run(host='127.0.0.1', port=5000, debug=True)
